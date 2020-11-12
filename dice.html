@@ -1,0 +1,89 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<style>
+* { box-sizing: border-box; }
+
+.dice { position: absolute; right: 30px; bottom: 30px; width: 70px; height: 70px; }
+.cube .box { width: 70px; height: 70px; transform-style: preserve-3d;
+transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); margin: auto; position: relative;
+transform-style: preserve-3d; transition: all 1s ease-in-out; }
+.cube .s1 { transform: rotatex(90deg) translateX(0px) translateY(0px) translateZ(35px); background-color: #FFF; }
+.cube .s2 { transform: rotateY(-90deg) translateX(0px) translateY(0px) translateZ(35px); background-color: #ffaf1c; }
+.cube .s3 { transform: translateX(0px) translateY(0px) translateZ(35px); background-color: #58d568; }
+.cube .s4 { transform: rotateY(90deg) translateX(0px) translateY(0px) translateZ(35px); background-color: #ed3030; }
+.cube .s5 { transform: rotateY(180deg) translateX(0px) translateY(0px) translateZ(35px); background-color: #1c5ffe; }
+.cube .s6 { transform: rotateX(-90deg) translateX(0px) translateY(0px) translateZ(35px); background-color: #f2f215; }
+.box > div { position: absolute; transition: all 0.5s ease-in-out; width: 70px;
+height: 70px; float: left; overflow: hidden; opacity: 0.85; font-size: 67px; padding: 0.5px 6px; color: #fff; background: #444!important; } 
+</style>
+<div class="cube dice" onclick="dice_click()">
+	    <div id="cube_dice" class="box">
+	        <div class="s1"><i class="fas fa-dice-one"></i></div>
+	        <div class="s2"><i class="fas fa-dice-two"></i></div>
+	        <div class="s3"><i class="fas fa-dice-three"></i></div>
+	        <div class="s4"><i class="fas fa-dice-four"></i></div>
+	        <div class="s5"><i class="fas fa-dice-five"></i></div>
+	        <div class="s6"><i class="fas fa-dice-six"></i></div>
+	    </div>
+	</div>
+</div>
+<script>
+var dice_rolling = false;
+function dice_roll() {
+	for(var i = 0; i < 25; i++) { turn_cube(parseInt(Math.random() * 3) - 1); }
+}
+function dice_click() {
+	var roll = false;
+	dice_roll(); roll = true; dice_rolling = true;
+	if(roll) setTimeout(function(e) { dice_rolling = false; }, 2000);
+}
+
+// dice control
+var cubex = -22, cubey = -38, cubez = 0;
+var cube_fx = 0, cube_fy = -38, cube_fz = 0;
+var front = 3; var flipped = false; var righted = false; var rc = 0;
+function rotate(variableName, degrees) {
+    window[variableName] = (window[variableName] + degrees) % 36000;
+    rot_cube(cubex, cubey, cubez);
+}
+function rot_cube(degx, degy, degz){
+    segs = "rotateX("+degx+"deg) rotateY("+degy+"deg) rotateZ("+degz+"deg) translateX(0) translateY(0) translateZ(0)";
+    document.getElementById('cube_dice').style.transform = segs;
+}
+function turn_cube(where) {
+	if(where == 1 || where == -1) {
+		rotate("cubey", 90*where); 
+		if(!flipped) where*=-1; 
+		if(righted) {
+			if(front == 1 && where == 1) front = 5;
+			else if(front == 5 && where == -1) front = 1;
+			else if(front == 3 && where == -1) front = 6;
+			else if(front == 6 && where == 1) front = 3;
+			else if(front == 6 && where == -1) front = 5;
+			else if(front == 5 && where == 1) front = 6;
+			else if(front == 1 && where == -1) front = 3;
+			else if(front == 3 && where == 1) front = 1;
+		} else {
+			if(front == 5 && where == 1) front = 2;
+			else if(front == 2 && where == -1) front = 5;
+			else front = (front+1*where) % 6;
+		}
+	} else {
+		rotate("cubez", 90);
+		if(!flipped && !righted) {
+			if(front == 1) front = 4; else if(front == 6) front = 2;
+			else if(front == 2) front = 6; else if(front == 4) front = 1;
+		} else if(!flipped && righted) {
+			if(front == 1) front = 2; else if(front == 6) front = 4;
+			else if(front == 2) front = 6; else if(front == 4) front = 1;
+		} else if(flipped && !righted) {
+			if(front == 4) front = 1; else if(front == 2) front = 6;
+			else if(front == 6) front = 4; else if(front == 1) front = 4;
+		} else {
+			if(front == 4) front = 1; else if(front == 2) front = 6;
+			else if(front == 6) front = 4; else if(front == 1) front = 2;
+		}
+		if(righted) { righted = false; rc++; } else { righted = true; rc++; }
+		if(rc == 2) { rc = 0; if(flipped) flipped = false; else flipped = true; }
+	}
+}
+</script>
