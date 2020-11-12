@@ -1,6 +1,6 @@
 # HTML-Rotating-Dice
 
-A rorating dice that might be used in a dice based game or for some loading screen animations maybe
+A rotating dice that might be used in a dice based game or for some loading screen animations maybe
 
 Currently it works on click but the functions are generic enough to be used for any purpose
 
